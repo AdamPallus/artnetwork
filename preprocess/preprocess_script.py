@@ -21,7 +21,7 @@ nimages=len(images)
 model = VGG16(include_top=False, weights='imagenet')
 n_dims=25088 #number of features extraccted from this model
 
-X = np.zeros((nimages+1, 224, 224, 3))
+X = np.zeros((nimages, 224, 224, 3))
 #%%
 #Start at 1 so there is room in the matrix to insert the user image at 0
 #counter = 1
