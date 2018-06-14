@@ -1,0 +1,84 @@
+
+{% extends "layout.html" %}
+
+
+{% block head %}
+<title> Art Network </title>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+{% block body %}
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="/">ART MAGIC</a></li>
+        <li><a href="http://www.google.com">About Me</a></li>
+        <li><a href="http://www.github.com/adampallus/artnetwork">Artnetwork Github Page</a></li>
+        <li><a href="http://www.google.com"> How does it work? <span class="sr-only">(current)</span></a></li>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+<!-- Background image -->
+<!--body background='/static/img/success.png' height='100%'-->
+
+<div class="row">
+  <div class="column">
+    <img src={{"/static/img/full/"+matches[0][0]}}>
+    <img src={{"/static/img/full/"+matches[1][0]}}>
+  </div>
+  <div class="column">
+    <img class="userpic" src={{"static/img/tmp/"+original}}>
+    <img src={{"/static/img/full/"+matches[2][0]}}>
+  </div>
+  <div class="column">
+    <img src={{"/static/img/full/"+matches[3][0]}}>
+    <img src={{"/static/img/full/"+matches[4][0]}}>
+  </div>
+</div>
+<div class="row">
+  <div class="column">
+    <img src={{"/static/img/full/"+matches[5][0]}}>
+    <img src={{"/static/img/full/"+matches[6][0]}}>
+  </div>
+  <div class="column">
+    <img src={{"/static/img/full/"+matches[7][0]}}>
+    <img src={{"/static/img/full/"+matches[8][0]}}>
+  </div>
+  <div class="column">
+    <img src={{"/static/img/full/"+matches[9][0]}}>
+    <img src={{"/static/img/full/"+matches[10][0]}}>
+  </div>
+</div>
+<div class="row">
+  <div class="column">
+    <img src={{"/static/img/full/"+matches[11][0]}}>
+    <img src={{"/static/img/full/"+matches[12][0]}}>
+  </div>
+  <div class="column">
+    <img src={{"/static/img/full/"+matches[13][0]}}>
+    <img src={{"/static/img/full/"+matches[14][0]}}>
+  </div>
+  <div class="column">
+    <img src={{"/static/img/full/"+matches[15][0]}}>
+    <img src={{"/static/img/full/"+matches[16][0]}}>
+  </div>
+</div>
+
+
+</body>
+
+<script type="text/javascript" src="/static/js/index.js"></script>
+
+
+{% endblock %}
