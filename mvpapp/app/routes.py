@@ -17,17 +17,23 @@ from keras.applications import VGG16
 from PIL import Image
 from keras.preprocessing import image as kimage
 import tensorflow as tf
+from werkzeug.utils import secure_filename
 
 collection_features = np.load('/home/adam/artnetwork/saved_collection_features.npy')
 
 imagespath= "/home/adam/artnetwork/fineartamericaspider/output/full"
+
+app.secret_key = 'adam'
+
 os.chdir(imagespath)
 images=glob.glob("*.jpg")
 
 graph = tf.get_default_graph()
 model = VGG16(include_top=False, weights='imagenet')
 
-
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 @app.route('/',  methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
@@ -48,12 +54,12 @@ def index():
 
         # File was found
         file = flask.request.files['file']
-        if file:
+        if file and allowed_file(file.filename):
             print('SUCCESS')
                     # Image info
             img_file = flask.request.files.get('file')
-            img_name = img_file.filename
-        
+#            img_name = img_file.filename
+            img_name = secure_filename(img_file.filename)
             # Write image to static directory and do the hot dog check
             imgurl=os.path.join(app.config['UPLOAD_FOLDER'], img_name)
             img_file.save(imgurl)
@@ -63,13 +69,14 @@ def index():
             global graph
             with graph.as_default():
                 pred=model.predict(img)
-            matches=similarity.find_matches(pred, collection_features, images,nimages=20)
+            matches=similarity.find_matches(pred, collection_features, images,nimages=50)
             # Delete image when done with analysis
 #            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], img_name))
             print('Processed image')
             print(matches[0][0])
             return flask.render_template('results.html',matches=matches,original=img_name)
-        print('Bad fail')
+        flask.flash('Upload only image files')
+
         
         return flask.redirect(flask.request.url)
     

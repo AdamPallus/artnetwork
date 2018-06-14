@@ -85,11 +85,13 @@ input[type=file] {
 
 
 .btn-file {
-    position: relative;
+    /*position: relative;*/
+    position: hidden;
     overflow: hidden;
 }
 .btn-file input[type=file] {
-    position: absolute;
+    /*position: absolute;*/
+    position: hidden;
     top: 0;
     right: 0;
     min-width: 100%;
@@ -142,4 +144,8 @@ input[type=file] {
     max-width: 100%;
   }*/
 
+}
+
+[hidden] {
+  display: none !important;
 }
