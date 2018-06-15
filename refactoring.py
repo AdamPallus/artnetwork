@@ -17,6 +17,7 @@ import glob, os
 import operator
 import matplotlib.pyplot as plt
 
+
 #%%
 def cosine_distance(a,b):
     return(np.inner(a, b) / (norm(a) * norm(b)))
@@ -56,6 +57,8 @@ def display_matches_inverse(imageurl,preds,model,images,nimages=10,distance='cos
     topmatches=sorted(similar_images.items(), key=operator.itemgetter(1),reverse=False)[0:nimages]
     for match in topmatches:
         display(Image(match[0]))
+
+#    return(similar_images)
         
 #%%
 '''
@@ -103,3 +106,66 @@ display_matches(chosenimage,collection_features,model,images,nimages=50,distance
 #%%
 chosenimage = askopenfile(**options).name
 display_matches_inverse(chosenimage,collection_features,model,images,nimages=50,distance='euclidian')
+#%%
+#messing with panda
+import pandas as pd
+#%%
+files_and_titles=pd.read_csv('/home/adam/Downloads/files_and_titles.csv')
+#%%
+def cosine_distance(a,b):
+    return(np.inner(a, b) / (norm(a) * norm(b)))
+
+def euclidian_distance(a,b):
+    return(norm(a-b)*-1)
+    
+def find_matches(pred, collection_features, files_and_features, nimages=8, distance='cosine'): 
+#    img = kimage.load_img(imageurl, target_size=(224, 224))
+#    x = kimage.img_to_array(img)
+#    x = np.expand_dims(x, axis=0)
+#    img = preprocess_input(img)
+#    pred = model.predict(img)
+    pred = pred.flatten()
+    
+    nimages = len(collection_features)
+    sims = np.zeros((nimages, 1))
+    for i in range(0,nimages):
+        if distance=='cosine':
+            sims[i]= cosine_distance(pred.flatten(),collection_features[i].flatten())
+        else:
+            sims[i]= euclidian_distance(pred.flatten(),collection_features[i].flatten())
+    similar_images=dict(zip(images,sims))
+    topmatches=sorted(similar_images.items(), key=operator.itemgetter(1),reverse=True)[0:nimages+1]
+    return(topmatches)
+
+        
+def find_matches2(pred, collection_features, images, nimages=8, distance='cosine'): 
+#    img = kimage.load_img(imageurl, target_size=(224, 224))
+#    x = kimage.img_to_array(img)
+#    x = np.expand_dims(x, axis=0)
+#    img = preprocess_input(img)
+#    pred = model.predict(img)
+    pred = pred.flatten()
+    
+    nimages = len(collection_features)
+    sims = np.zeros((nimages, 1))
+    for i in range(0,nimages):
+        if distance=='cosine':
+            sims[i]= cosine_distance(pred.flatten(),collection_features[i].flatten())
+        else:
+            sims[i]= euclidian_distance(pred.flatten(),collection_features[i].flatten())
+    topmatches=pd.DataFrame(images,columns=['imgfiles'])
+#    topmatches['simscore']=sims
+    return(topmatches)
+#%%
+chosenimage="/home/adam/Pictures/sun1.jpg"
+img = kimage.load_img(chosenimage, target_size=(224, 224))
+img = kimage.img_to_array(img)
+img = np.expand_dims(img, axis=0)    
+pred=model.predict(img)
+#%%
+matches=find_matches2(pred, collection_features, files_and_titles['imgfile'],nimages=5)
+
+#%%
+matches = pd.DataFrame(matches, columns=['imgfile', 'simscore'])
+#%%
+joinedpd = pd.merge(files_and_titles,matchespd)

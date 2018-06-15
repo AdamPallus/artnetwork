@@ -15,7 +15,7 @@ import glob, os
 #%%
 imagespath= "/home/adam/artnetwork/fineartamericaspider/output/full"
 os.chdir(imagespath)
-images=glob.glob("*.jpg")
+images=sorted(glob.glob("*.jpg"))
 nimages=len(images)
 
 model = VGG16(include_top=False, weights='imagenet')
