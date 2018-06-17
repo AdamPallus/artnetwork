@@ -38,7 +38,7 @@ for imgname in images:
 X = preprocess_input(X)
 these_preds = model.predict(X)
 #%%
-np.save('/home/adam/artnetwork/saved_these_preds',these_preds)
+np.save('/home/adam/artnetwork/collection_features_6-17',these_preds)
 #%%
 shp = (nimages+1, n_dims)
 preds=sp.lil_matrix((nimages+1, n_dims))

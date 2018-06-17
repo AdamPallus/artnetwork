@@ -7,23 +7,29 @@ Created on Wed Jun 13 09:56:53 2018
 """
 
 from app import app
-from app.models import similarity
+from app.models.similarity import find_matches
 import flask
-
-import glob, os, io
+from flask import send_from_directory
+import glob, os
 
 import numpy as np
 from keras.applications import VGG16
-from PIL import Image
 from keras.preprocessing import image as kimage
 import tensorflow as tf
 from werkzeug.utils import secure_filename
 
 import pandas as pd
 
-collection_features = np.load('/home/adam/artnetwork/saved_collection_features.npy')
+#collection_features = np.load('/home/adam/artnetwork/saved_collection_features.npy')
+#collection_features = np.load('/home/adam/artnetwork/collection_features2.npy')
 
-files_and_titles=pd.read_csv('/home/adam/Downloads/files_and_titles.csv')
+collection_features = np.load('/home/adam/artnetwork/collection_features_6-17.npy')
+files_and_titles=pd.read_csv('/home/adam/artnetwork/files_and_titles_6-17.csv')
+
+#files_and_titles=pd.read_csv('/home/adam/Downloads/files_and_titles.csv')
+
+#files_and_titles.sort_values(by='imgfile',inplace=True)
+#files_and_titles.reset_index(inplace=True)
 
 imagespath= "/home/adam/artnetwork/fineartamericaspider/output/full"
 
@@ -64,25 +70,28 @@ def index():
             img_file = flask.request.files.get('file')
 #            img_name = img_file.filename
             img_name = secure_filename(img_file.filename)
-            # Write image to static directory and do the hot dog check
+
+            # Write image to static directory 
             imgurl=os.path.join(app.config['UPLOAD_FOLDER'], img_name)
-            img_file.save(imgurl)
+            file.save(imgurl)
+
             img = kimage.load_img(imgurl, target_size=(224, 224))
             img = kimage.img_to_array(img)
             img = np.expand_dims(img, axis=0)    
             global graph
             with graph.as_default():
                 pred=model.predict(img)
-            matches=similarity.find_matches(pred, collection_features, images,nimages=50)
+            matches=find_matches(pred, collection_features, files_and_titles['imgfile'],nimages=50)
             matches = pd.DataFrame(matches, columns=['imgfile', 'simscore'])
             matches['simscore']=matches.simscore.astype('double')
             showresults=files_and_titles.set_index('imgfile',drop=False).join(matches.set_index('imgfile'))
             showresults=showresults.sort_values(by='simscore',ascending=False)
             # Delete image when done with analysis
 #            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], img_name))
-            return flask.render_template('results.html',matches=showresults,original=img_name)
+            original_url = img_name
+#            return flask.render_template('results2.html',matches=showresults,original=img_name)
+            return flask.render_template('results2.html',matches=showresults,original=original_url)
         flask.flash('Upload only image files')
 
         
         return flask.redirect(flask.request.url)
-    
