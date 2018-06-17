@@ -1,0 +1,5 @@
+iptables -I INPUT -p tcp --dport 5000 -j ACCEPT
+https://askubuntu.com/questions/430853/how-do-i-find-my-internal-ip-address?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+
+gunicorn -b 0.0.0.0:5000 -w 1 app:app
+

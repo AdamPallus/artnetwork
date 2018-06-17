@@ -25,6 +25,25 @@ def cosine_distance(a,b):
 def euclidian_distance(a,b):
     return(norm(a-b)*-1)
     
+def get_preds(imageurl,model): 
+    img = kimage.load_img(imageurl, target_size=(224, 224))
+    x = kimage.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+    x = preprocess_input(x)
+    pred = model.predict(x)
+    pred = pred.flatten()  
+    return(pred)
+
+def find_matches_preds(pred,X,distance='cosine'):  
+    nimages = len(X)
+    sims = np.zeros((nimages, 1))
+    for i in range(0,nimages):
+        if distance=='cosine':
+            sims[i]= cosine_distance(pred.flatten(),X[i].flatten())
+        else:
+            sims[i]= euclidian_distance(pred.flatten(),X[i].flatten())
+    return(sims)
+    
 def find_matches(imageurl,X,model,distance='cosine'): 
     img = kimage.load_img(imageurl, target_size=(224, 224))
     x = kimage.img_to_array(img)
@@ -99,6 +118,40 @@ chosenimage = askopenfile(**options).name
 display_matches(chosenimage,collection_features,model,images,nimages=20,distance='cosine')
 
 #%%
+def match_two(imageurl1,imageurl2,collection_features,model,images,nimages=10,distance='cosine'):
+    display(Image(imageurl1,height=300, width=300))
+    display(Image(imageurl2,height=300, width=300))
+    preds1=get_preds(imageurl1,model)
+    preds2=get_preds(imageurl2,model)
+    preds=(preds1+preds2)/2
+    similarities = find_matches_preds(preds,collection_features,distance)
+    similar_images=dict(zip(images,similarities))
+    topmatches=sorted(similar_images.items(), key=operator.itemgetter(1),reverse=False)[0:nimages]
+    for match in topmatches:
+        display(Image(match[0]))
+
+def display_matches_pair(imageurl,imageurl2,collection_features,model,images,nimages=10,distance='cosine'):
+    display(Image(imageurl,height=300, width=300))
+    display(Image(imageurl2,height=300, width=300))
+    similarities = find_matches(imageurl,collection_features,model,distance)
+    similarities2 = find_matches(imageurl2,collection_features,model,distance)
+    similar_images=dict(zip(images,(similarities+similarities2)/2))
+    topmatches=sorted(similar_images.items(), key=operator.itemgetter(1),reverse=True)[0:nimages]
+    for match in topmatches:
+        display(Image(match[0]))
+#%%
+chosenimage = askopenfile(**options).name
+chosenimage2= askopenfile(**options).name
+#%%
+display_matches_pair(chosenimage,chosenimage,collection_features,model,images,nimages=15)
+#%%
+display_matches_pair(chosenimage2,chosenimage2,collection_features,model,images,nimages=15)
+#%%
+display_matches_pair(chosenimage,chosenimage2,collection_features,model,images,nimages=15)
+#%%
+match_two(chosenimage,chosenimage2,collection_features,model,images,nimages=20,distance='cosine')
+#%%
+match_two(chosenimage,chosenimage,collection_features,model,images,nimages=20,distance='cosine')
 #%%
 chosenimage = askopenfile(**options).name
 display_matches(chosenimage,collection_features,model,images,nimages=50,distance='euclidian')
@@ -163,7 +216,7 @@ img = kimage.img_to_array(img)
 img = np.expand_dims(img, axis=0)    
 pred=model.predict(img)
 #%%
-matches=find_matches2(pred, collection_features, files_and_titles['imgfile'],nimages=5)
+matches=find_matches(pred, collection_features, files_and_titles['imgfile'],nimages=5)
 
 #%%
 matches = pd.DataFrame(matches, columns=['imgfile', 'simscore'])
