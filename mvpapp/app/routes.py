@@ -26,17 +26,20 @@ import pandas as pd
 collection_features = np.load('/home/adam/artnetwork/collection_features_6-17.npy')
 files_and_titles=pd.read_csv('/home/adam/artnetwork/files_and_titles_6-17.csv')
 
+collection_features = np.load('/home/adam/artnetwork/collection_features_6-17.npy')
+files_and_titles=pd.read_csv('/home/adam/artnetwork/files_and_titles_6-17.csv')
+
 #files_and_titles=pd.read_csv('/home/adam/Downloads/files_and_titles.csv')
 
 #files_and_titles.sort_values(by='imgfile',inplace=True)
 #files_and_titles.reset_index(inplace=True)
 
-imagespath= "/home/adam/artnetwork/fineartamericaspider/output/full"
+#imagespath= "/home/adam/artnetwork/fineartamericaspider/output/full"
 
 app.secret_key = 'adam'
 
-os.chdir(imagespath)
-images=glob.glob("*.jpg")
+#os.chdir(imagespath)
+#images=glob.glob("*.jpg")
 
 graph = tf.get_default_graph()
 model = VGG16(include_top=False, weights='imagenet')
@@ -72,9 +75,15 @@ def index():
             img_name = secure_filename(img_file.filename)
 
             # Write image to static directory 
+            #os.getcwd()
             imgurl=os.path.join(app.config['UPLOAD_FOLDER'], img_name)
-            file.save(imgurl)
-
+            try:
+                file.save(imgurl)
+            except Exception as e:
+                print(e)
+                print(os.getcwd())
+                raise e
+                
             img = kimage.load_img(imgurl, target_size=(224, 224))
             img = kimage.img_to_array(img)
             img = np.expand_dims(img, axis=0)    

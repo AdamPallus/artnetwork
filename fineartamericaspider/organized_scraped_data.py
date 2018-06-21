@@ -11,7 +11,9 @@ import glob, os
 # In[2]:
 
 
-dataloc="/home/adam/artnetwork/fineartamericaspider/finearturls.json"
+#dataloc="/home/adam/artnetwork/fineartamericaspider/finearturls.json"
+dataloc="/home/adam/artnetwork/fineartamericaspider/celebimages.json"
+
 with open(dataloc) as train_file:
     dict_train = json.load(train_file)
 
@@ -31,7 +33,8 @@ def get_link_and_image(image):
     return(dict({
     "art_title": art_title,
     "imgfile": sha1(image.encode('utf-8')).hexdigest()+".jpg",
-    "linkurl": "https://fineartamerica.com/featured/" + art_title +".html?product=art-print",
+#    "linkurl": "https://fineartamerica.com/featured/" + art_title +".html?product=art-print",
+    "linkurl": "https://fineartamerica.com/featured/" + art_title +".html",
     "image_url":image
     }))
 
@@ -52,6 +55,7 @@ for urls_list in data:
 imagespath= "/home/adam/artnetwork/fineartamericaspider/output/full"
 os.chdir(imagespath)
 images=glob.glob("*.jpg")
+#%%
 
 files_and_titles=pd.DataFrame(db).sort_values('art_title',).drop_duplicates()
 files_and_titles=files_and_titles[files_and_titles['imgfile'].isin(images)]
@@ -60,5 +64,5 @@ files_and_titles.reset_index(inplace=True)
 # In[10]:
 
 
-files_and_titles.to_csv('files_and_titles_6-17.csv')
-
+#files_and_titles.to_csv('files_and_titles_6-17.csv')
+files_and_titles.to_csv('files_and_titles_celeb.csv')
